@@ -4,7 +4,7 @@
 
 Zynost is a decision-intelligence platform for crypto traders. Instead of asking a single AI model to eyeball a chart and guess, a query fans out across a panel of specialist agents — each one constrained to a narrow, well-defined job and a strict JSON schema — and the disagreements between them get argued out before a verdict ever reaches the user.
 
-**Live:** https://app.zynost.com
+**Live:** https://zynost.com https://app.zynost.com
 
 ## The panel, not a single model
 
@@ -24,7 +24,7 @@ Live prices and volume come from four centralized exchanges (Binance, KuCoin, Ga
 
 ## Stack
 
-FastAPI · PostgreSQL (async SQLAlchemy) · Anthropic Claude for agent reasoning · a multi-source market-data layer spanning CEX, DEX, on-chain, and news APIs
+FastAPI · PostgreSQL (async SQLAlchemy) · Anthropic Claude for agent reasoning · a multi-source market-data layer spanning CEX, DEX, on-chain, and news APIs, Goplus Security platform for each network scaning red and gree flag and so more.
 
 ## Status
 
