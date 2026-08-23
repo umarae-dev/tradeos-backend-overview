@@ -1,372 +1,361 @@
-# Zynost — AI Decision Intelligence for Crypto
+# Zynost Public Intelligence Reference
 
-> **Evidence first. AI second. One decision-ready view instead of another wall of noisy signals.**
+> **Evidence first. AI second. A runnable open-source reference for deterministic crypto decision intelligence.**
 
-Zynost is a crypto decision-intelligence platform designed to turn fragmented market information into a structured, auditable research view.
+Zynost turns fragmented market, derivatives, on-chain, security and macro observations into a structured evidence bundle before any optional language-model explanation is allowed to run.
 
-The current production architecture does **not** ask one language model to look at a chart and invent a conclusion. It first builds a deterministic evidence layer from live/public market data, measures data quality and coverage, derives institutional-style lenses from that evidence, and only then offers an on-demand AI **Decision Brief** that explains the case in human language.
+This repository is **real executable source code**, not a documentation-only showcase. It contains a provider-agnostic 12-module evidence engine, deterministic consensus, FlowState regime analysis, Market Twin historical-analogue logic, public institutional-data adapters, a FastAPI endpoint, tests, Docker and CI.
 
-**Live:** https://zynost.com  
-**App:** https://app.zynost.com  
-**Backend:** Python / FastAPI / PostgreSQL
-
----
-
-## The problem
-
-A crypto trader can already find price, charts, funding, news, project data, order books and on-chain metrics in dozens of places.
-
-The harder problem is deciding:
-
-- which evidence actually matters now;
-- whether different signals agree or conflict;
-- whether a move is spot-led or leverage-led;
-- whether liquidity is strong enough to trust the move;
-- whether supply/security risk invalidates the apparent setup;
-- whether current conditions resemble historical regimes;
-- what would confirm or invalidate the thesis.
-
-Zynost is built around that decision layer.
+**Production product:** https://zynost.com  
+**Application:** https://app.zynost.com  
+**License:** Apache-2.0  
+**Python:** 3.11+  
+**Public/private boundary:** [`PUBLIC_PRIVATE_BOUNDARY.md`](PUBLIC_PRIVATE_BOUNDARY.md)
 
 ---
 
-## Current production architecture
+## Why this exists
+
+Crypto traders already have access to charts, order books, funding rates, news, token metadata and on-chain data. The harder problem is deciding:
+
+- which evidence matters now;
+- which evidence is directional versus merely contextual;
+- whether leverage or liquidity weakens an apparent move;
+- whether risk/security conditions invalidate a thesis;
+- what is unavailable and therefore should **not** be fabricated;
+- what would confirm or invalidate a market view.
+
+The public reference demonstrates the architecture Zynost uses to solve that problem without asking an LLM to invent market measurements.
+
+---
+
+## What is actually open source
 
 ```text
-Live / public market data
-        │
-        ▼
-Deterministic Evidence Engine
-        │
-        ├── Technical
-        ├── Price Structure
-        ├── Liquidity
-        ├── Order Flow
-        ├── Leverage
-        ├── Risk
-        ├── News Context
-        ├── Macro
-        ├── Project Data
-        ├── Security
-        ├── On-chain
-        └── Derivatives / Institutional Context
-        │
-        ▼
-Coverage + Data Quality
-        │
-        ▼
-Deterministic Consensus
-        │
-        ├── FlowState / market regime
-        ├── Institutional lenses
-        ├── Anomaly detection
-        ├── Thesis tracker
-        └── Market Twin
-        │
-        ▼
-Optional AI Decision Brief
-        │
-        ▼
-Follow-up Explain session
+Public / caller-supplied observations
+             │
+             ▼
+      12-Module Evidence Builder
+             │
+             ├─ Technical
+             ├─ Price Structure
+             ├─ Liquidity
+             ├─ Order Flow
+             ├─ Leverage
+             ├─ Risk
+             ├─ News Context
+             ├─ Macro
+             ├─ Project
+             ├─ Security
+             ├─ On-chain
+             └─ Derivatives
+             │
+             ▼
+       Evidence Roles
+     directional / context / risk_gate
+             │
+             ▼
+    Deterministic Consensus
+             │
+       ┌─────┴──────────┐
+       ▼                ▼
+   FlowState         Anomalies
+       │                │
+       └───────┬────────┘
+               ▼
+         Thesis Contract
+               │
+               ▼
+       API / UI / optional AI
 ```
 
-The important design decision is the boundary in the middle:
+### Included code
 
-> **The language model interprets a bounded evidence context; it is not the source of the market numbers.**
+- [`src/evidence/builder.py`](src/evidence/builder.py) — deterministic 12-module evidence construction;
+- [`src/evidence/model.py`](src/evidence/model.py) — provider-agnostic evidence schema;
+- [`src/evidence/roles.py`](src/evidence/roles.py) — directional/context/risk-gate semantics;
+- [`src/evidence/consensus.py`](src/evidence/consensus.py) — weighted deterministic posture;
+- [`src/intelligence/flow_state.py`](src/intelligence/flow_state.py) — deterministic market-regime layer;
+- [`src/intelligence/market_twin.py`](src/intelligence/market_twin.py) — point-in-time historical analogue matcher;
+- [`src/intelligence/thesis.py`](src/intelligence/thesis.py) — anomalies and confirmation/invalidation conditions;
+- [`src/intelligence/pipeline.py`](src/intelligence/pipeline.py) — end-to-end public pipeline;
+- [`src/providers/public_institutional.py`](src/providers/public_institutional.py) — keyless Deribit/CFTC/stablecoin adapters;
+- [`src/api/app.py`](src/api/app.py) — FastAPI `/health` and `/analyze` endpoints.
 
----
-
-## 12 evidence modules
-
-The production evidence bundle currently organizes market information into twelve modules.
-
-| Module | What it answers |
-|---|---|
-| **Technical** | What is short-horizon momentum doing and where are observed support/resistance levels? |
-| **Price Structure** | Is the sampled swing structure trending, ranging or deteriorating? |
-| **Liquidity** | Is turnover deep enough for cleaner execution or unusually thin? |
-| **Order Flow** | Is live resting liquidity bid-dominant, ask-dominant or balanced? |
-| **Leverage** | Is perpetual funding controlled or showing crowding stress? |
-| **Risk** | How large is the observed volatility/range relative to current price? |
-| **News Context** | Is there meaningful recent source coverage around the asset? |
-| **Macro** | What does broad crypto risk appetite currently look like? |
-| **Project** | What can be verified from public supply / market metadata? |
-| **Security** | Are observable contract/network risk flags present? |
-| **On-chain** | What network activity is actually available for the asset? |
-| **Derivatives** | What can options, positioning and broader capital-flow data add? |
-
-Each module carries its own:
-
-- status;
-- classification;
-- directional role or risk/context role;
-- strength;
-- data-quality label;
-- coverage score;
-- observation timestamp;
-- source class;
-- raw decision-relevant metrics.
-
-Unavailable evidence is marked unavailable instead of being replaced with a fabricated neutral value.
+The public provider module is adapted from a safe/keyless production provider layer. It contains no Zynost API credentials or private provider configuration.
 
 ---
 
-## Evidence roles — not every fact gets a vote
+## Quick start
 
-A common analytics mistake is treating every metric as if it were bullish or bearish.
+### Option A — local Python
 
-Zynost separates evidence into different roles:
+```bash
+git clone https://github.com/umarae-dev/tradeos-backend-overview.git
+cd tradeos-backend-overview
 
-- **Directional** evidence can contribute to market direction;
-- **Context** evidence informs the interpretation but does not automatically vote;
-- **Risk gates** can weaken a thesis without pretending to predict direction.
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -e ".[dev]"
 
-For example, high network activity and high volatility both contain the word "high", but they do not mean the same thing. The production engine maps stance at the module level rather than using generic keyword scoring.
+python examples/run_reference.py
+pytest -q
+```
 
----
+The deterministic reference example requires **no API key, database or model credential**.
 
-## Deterministic Full Scan
+### Option B — API
 
-A paid Full Scan builds the evidence bundle and institutional layers **without requiring an LLM call for the market calculations themselves**.
+```bash
+uvicorn src.api.app:app --reload
+```
 
-The result contains:
+Then:
 
-- evidence modules;
+```text
+GET  /health
+POST /analyze
+```
+
+`POST /analyze` accepts structured observations and returns:
+
+- normalized evidence bundle;
+- evidence availability/coverage;
 - deterministic consensus;
-- coverage score;
-- institutional FlowState;
-- regime shift relative to a prior scan where available;
-- premium institutional lenses;
-- anomalies;
-- thesis confirmation/invalidation conditions;
-- Market Twin historical analogue analysis;
-- an optional Decision Brief entry point.
-
-This separation matters for reproducibility: re-reading the same stored evidence does not require asking an AI model to recalculate the market.
-
----
-
-## FlowState — describing the market regime
-
-Zynost derives a higher-level **FlowState** from multiple observable dimensions rather than reducing everything to a single indicator.
-
-Current dimensions include concepts such as:
-
-- **Fresh Capital** — capital-flow and order-book pressure;
-- **Leverage Dependency** — how dependent the move appears to be on leveraged positioning;
-- **Holder Pressure** — observable concentration / positioning pressure where coverage exists;
-- **Execution Quality** — turnover depth plus order-book conditions;
-- **Supply Shock** — circulating-supply availability and observable mint/supply controls.
-
-These dimensions are combined into an interpretable regime such as accumulation, leveraged markup, distribution, liquidity stress or a balanced transition.
-
-The system also compares a user's latest Full Scan against their previous one and can surface a material **Flow Shift** when the regime or a major dimension changes enough to matter.
-
----
-
-## Institutional lenses
-
-Where reliable public data is available, Zynost adds premium lenses that are usually missing from basic retail crypto dashboards.
-
-Examples include:
-
-- **Options Risk Surface** — options open-interest balance and implied-volatility context;
-- **Leverage Stress Radar** — funding and open-interest crowding;
-- **Absorption & Exhaustion Monitor** — price versus order-flow disagreement;
-- **Institutional Positioning Lens** — official positioning data where available;
-- **Cross-Market Dislocation Engine** — divergence between asset price, system liquidity and macro risk appetite.
-
-These lenses fail honestly when the required public coverage does not exist for an asset.
-
----
-
-## Market Twin — historical regimes, not a fake forecast
-
-For supported assets with sufficient stored history, **Market Twin** compares the current evidence vector with prior point-in-time regimes.
-
-Instead of saying "AI predicts +12%", it asks a more defensible question:
-
-> **When the market previously looked most similar to this, what distribution of outcomes followed?**
-
-The current implementation:
-
-- uses only evidence available at each historical point in time;
-- excludes future information from the feature vector;
-- requires sufficient feature coverage;
-- spaces historical anchors to reduce near-duplicate samples;
-- requires a meaningful number of independent analogues before calling the result operational;
-- reports distributions across multiple horizons rather than one guaranteed target;
-- includes adverse and favorable excursion information;
-- exposes Base / Confirmation / Stress scenario comparisons.
-
-Full-quality Market Twin calibration currently begins with **BTC and ETH** while history accumulates.
-
-If there is not enough clean history, the product says it is still collecting history instead of manufacturing a forecast.
-
-See [`METHODOLOGY.md`](METHODOLOGY.md) for the public methodology boundary.
-
----
-
-## Optional AI Decision Brief
-
-After a Full Scan is complete, a user can request a language-specific **Decision Brief**.
-
-The AI receives a bounded decision context built from the stored evidence layers, including:
-
-- market state;
-- coverage;
-- evidence modules;
-- consensus;
 - FlowState;
-- Flow Shift;
-- institutional lenses;
 - anomalies;
-- thesis tracker;
-- Market Twin where available.
+- bounded thesis conditions.
 
-The Decision Brief then produces a human-readable synthesis such as:
+### Option C — Docker
 
-- bull case;
-- bear case;
-- skeptic/risk check;
-- confidence;
-- explanation grounded in the supplied evidence.
-
-The production service deliberately removes credentials and user PII from this decision context.
-
-A separate **Explain** agent can then answer follow-up questions against the same evidence instead of starting from an ungrounded blank prompt.
+```bash
+docker build -t zynost-public-intelligence .
+docker run --rm -p 8000:8000 zynost-public-intelligence
+```
 
 ---
 
-## Public institutional data layer
+## Evidence semantics: not every fact gets a vote
 
-Zynost combines ordinary market data with selected public institutional-style sources where coverage permits.
+A common analytics mistake is converting every data point into bullish/bearish sentiment.
 
-Examples currently include:
+Zynost separates evidence into three roles:
 
-- multi-exchange price/candle data;
-- public order books;
-- perpetual futures / funding information;
-- public options-market summaries for supported assets;
-- official weekly positioning data where available;
-- public stablecoin-supply flow data;
-- project and supply metadata;
-- security scans / native-network observations;
-- on-chain activity;
-- public news feeds;
-- broad crypto sentiment/macro context.
+| Role | Meaning |
+|---|---|
+| **Directional** | May contribute to market posture |
+| **Context** | Helps interpretation but does not automatically vote |
+| **Risk gate** | Can weaken a thesis without pretending to predict direction |
 
-Provider failure does not silently turn into invented evidence. Optional sources can degrade to unavailable while the rest of the evidence bundle remains usable.
+For example, high network activity and high volatility both contain the word "high", but they do not mean the same thing. The role contract prevents generic keyword scoring from corrupting the consensus.
 
 ---
 
-## Data quality and coverage are part of the product
+## Honest missing-data behavior
 
-A professional research system should communicate what it **doesn't know**.
+Missing evidence is not silently turned into a neutral signal.
 
-Zynost therefore attaches coverage and quality metadata to the evidence instead of hiding missing providers behind a polished score.
+If a provider or observation is unavailable, the module remains explicitly:
 
-This is important for long-tail assets where:
+```json
+{
+  "status": "unavailable",
+  "coverage": 0.0,
+  "stance": "unavailable"
+}
+```
 
-- derivatives may not exist;
-- institutional positioning may not be available;
-- contract metadata may be incomplete;
-- on-chain coverage may differ by network;
-- historical analogue data may not yet be sufficient.
-
-A smaller but honest evidence set is preferable to a confident-looking hallucination.
-
----
-
-## Reproducibility and stored evidence
-
-Full Scans persist their evidence context and signed analysis outputs so decision-relevant results can be traced back to the evidence that produced them.
-
-The architecture also separates:
-
-- immutable evidence;
-- deterministic interpretation layers;
-- optional language-model synthesis.
-
-That makes it possible to improve presentation and deterministic layers without rewriting the original market observations or charging the user for another model call.
+That behavior is tested. It matters especially for long-tail assets where options, institutional positioning, contract metadata or on-chain coverage may not exist.
 
 ---
 
-## Relationship to the broader Zynost ecosystem
+## Deterministic consensus
+
+The public consensus engine:
+
+1. considers only available evidence;
+2. separates directional evidence from context/risk gates;
+3. weights directional evidence by coverage and strength;
+4. produces an inspectable posture score;
+5. reports available/unavailable counts;
+6. does not require an LLM call.
+
+Production tuning remains proprietary; public thresholds/defaults are intentionally explicit and independently runnable.
+
+---
+
+## FlowState
+
+FlowState compresses several market dimensions into an interpretable regime layer. The public reference includes dimensions around:
+
+- fresh capital / flow pressure;
+- leverage dependency;
+- holder/positioning pressure;
+- execution quality;
+- supply conditions.
+
+It can classify regimes such as Organic Accumulation, Leveraged Markup, Distribution into Strength, Liquidity Vacuum, Supply Overhang or Balanced Transition and compare the current state with a prior snapshot.
+
+---
+
+## Market Twin
+
+The reference Market Twin module asks a bounded historical question:
+
+> **When prior point-in-time evidence looked most similar to the current evidence, what distribution of outcomes followed?**
+
+The implementation:
+
+- restricts features to observations known at the historical timestamp;
+- excludes future information from the feature vector;
+- requires minimum feature coverage;
+- uses robust scaling;
+- spaces analogue anchors to reduce near-duplicate windows;
+- reports distributions instead of a guaranteed target;
+- can return `collecting_history` instead of manufacturing a forecast.
+
+See [`METHODOLOGY.md`](METHODOLOGY.md).
+
+---
+
+## Public institutional adapters
+
+The keyless provider module currently demonstrates:
+
+- Deribit public options summaries for BTC/ETH;
+- CFTC official weekly positioning where available;
+- public stablecoin supply-flow data;
+- bounded caches;
+- basic circuit-breaker/failure behavior;
+- honest `None` degradation when reliable data is unavailable.
+
+The deterministic core does not depend on these adapters; callers can provide their own observations or BNB-specific/on-chain providers.
+
+---
+
+## Tests and CI
+
+The repository includes tests for core public invariants including:
+
+- 12-module bundle construction;
+- context/risk roles staying out of directional votes;
+- unavailable evidence remaining unavailable;
+- security flags surfacing as risk anomalies;
+- consensus behavior;
+- FlowState behavior;
+- Market Twin/reference behavior.
+
+GitHub Actions runs lint and tests on Python 3.11 and 3.12 for pushes and pull requests.
+
+```bash
+pytest -q
+ruff check src tests
+```
+
+---
+
+## Public vs production
+
+This repository is deliberately useful on its own, but it is not a dump of Zynost's commercial backend.
+
+### Public
+
+- evidence contracts;
+- deterministic reference builder;
+- consensus;
+- FlowState reference;
+- Market Twin reference;
+- public/keyless provider adapters;
+- anomalies/thesis contracts;
+- API, tests, examples, Docker and CI.
+
+### Private production IP / operations
+
+- exact production scoring/tuning;
+- proprietary prompts/model orchestration;
+- paid/private provider credentials and routing;
+- user/account/billing systems;
+- abuse/fraud controls;
+- private reliability/operational policies;
+- infrastructure/runbooks;
+- secrets and user data.
+
+**Private components are not required to run or evaluate this repository.** See [`PUBLIC_PRIVATE_BOUNDARY.md`](PUBLIC_PRIVATE_BOUNDARY.md).
+
+---
+
+## Provenance
+
+This public project is extracted/adapted from an existing private production codebase rather than fabricated as an isolated demo. The public repository preserves real public commit dates and does not backdate history.
+
+See [`PROVENANCE.md`](PROVENANCE.md) for the development lineage and extraction boundary.
+
+---
+
+## Repository map
+
+```text
+.
+├── .github/workflows/ci.yml
+├── ARCHITECTURE.md
+├── CONTRIBUTING.md
+├── Dockerfile
+├── LICENSE
+├── METHODOLOGY.md
+├── PROVENANCE.md
+├── PUBLIC_PRIVATE_BOUNDARY.md
+├── SECURITY.md
+├── pyproject.toml
+├── examples/
+│   └── run_reference.py
+├── src/
+│   ├── api/
+│   ├── evidence/
+│   ├── intelligence/
+│   └── providers/
+└── tests/
+```
+
+---
+
+## Relationship to the Zynost ecosystem
 
 ```text
 Zynost Intelligence
        │
-       ├──────────── decision context
+       ├──── structured evidence / decision context
        ▼
-Zynost Wallet
-       │
-       ├──────────── merchant / developer payments
-       ▼
-Zynost Pay
+Wallet and execution surfaces
        │
        ▼
-Zynost Paymaster ───── BNB Smart Chain
+Zynost Pay / Paymaster
        │
        ▼
-UQX ecosystem
+BNB Smart Chain
 ```
 
-Zynost Intelligence is the research and decision layer. Wallet and payment products are separate execution/custody surfaces with their own security boundaries.
-
-The long-term direction is to let intelligence improve user understanding and transaction safety **without turning AI into an unrestricted custodian of funds**.
+The long-term goal is to let evidence improve user understanding and transaction safety while preserving explicit user authorization and self-custody boundaries.
 
 ---
 
-## Stack
+## Contributing
 
-Python · FastAPI · PostgreSQL / async SQLAlchemy · background workers · multi-source public market-data services · deterministic evidence formulas · Anthropic Claude for bounded on-demand synthesis
-
----
-
-## Production vs. public repository boundary
-
-This repository is a **public architecture and methodology overview**, not the production backend.
-
-### Public here
-
-- product architecture;
-- evidence-module model;
-- data-quality philosophy;
-- deterministic-vs-AI boundary;
-- institutional intelligence concepts;
-- Market Twin methodology at a safe high level;
-- relationship to the wider Zynost ecosystem.
-
-### Kept private
-
-- production source code;
-- agent prompts;
-- internal operational configuration;
-- API credentials and provider keys;
-- database credentials;
-- proprietary implementation details and tuning;
-- abuse-prevention controls;
-- user data;
-- production monitoring/runbooks.
-
-No API key, private key, database credential or user-private information should ever be committed to this repository.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md). Contributions should preserve the evidence-first architecture, explicit missing-data semantics and deterministic/AI separation.
 
 ---
 
-## Important product principle
+## Security
 
-Zynost is **decision intelligence**, not an automatic promise of profit.
-
-The system is designed to make evidence easier to evaluate, surface disagreement and risk, and show what would confirm or invalidate a thesis. Historical analogues and AI explanations are research tools, not guarantees of future market performance.
+Do not commit credentials, private keys, user data or production infrastructure secrets. See [`SECURITY.md`](SECURITY.md).
 
 ---
 
-## Status
+## License
 
-**Active production development.**
+Apache License 2.0. The license covers this public repository; Zynost names, logos and commercial production systems remain separate from the code license.
 
-The backend currently includes the evidence-first Full Scan architecture, deterministic institutional layers, Market Twin history matching, on-demand Decision Brief synthesis and follow-up evidence-grounded explanation flows.
+---
 
-For the public methodology boundary, see [`METHODOLOGY.md`](METHODOLOGY.md).  
-For responsible security reporting, see [`SECURITY.md`](SECURITY.md).
+## Disclaimer
+
+This repository provides research and software infrastructure. It does not guarantee market outcomes and is not financial advice.
