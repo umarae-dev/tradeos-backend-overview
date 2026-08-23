@@ -1,7 +1,5 @@
 # Zynost Public Intelligence Reference
 
-[![CI](https://github.com/umarae-dev/tradeos-backend-overview/actions/workflows/ci.yml/badge.svg)](https://github.com/umarae-dev/tradeos-backend-overview/actions/workflows/ci.yml)
-
 > **Evidence first. AI second. A runnable open-source reference for deterministic crypto decision intelligence.**
 
 Zynost turns fragmented market, derivatives, on-chain, security and macro observations into a structured evidence bundle before any optional language-model explanation is allowed to run.
