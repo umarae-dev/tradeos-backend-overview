@@ -1,0 +1,35 @@
+name: Feature request
+description: Suggest a reusable improvement to the public reference implementation
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What public developer or research problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed public implementation
+      description: Describe the change without requesting proprietary production logic or secrets.
+    validations:
+      required: true
+  - type: dropdown
+    id: layer
+    attributes:
+      label: Area
+      options:
+        - Evidence model
+        - Provider adapter
+        - Consensus
+        - FlowState
+        - Market Twin
+        - API
+        - Tests / tooling
+        - Documentation
+        - Other
+    validations:
+      required: true
