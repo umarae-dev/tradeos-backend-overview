@@ -35,3 +35,8 @@ pythonpath = ["."]
 [tool.ruff]
 line-length = 110
 target-version = "py311"
+
+[tool.ruff.lint]
+# Keep the public CI focused on correctness while preserving production-derived
+# source formatting and the provider boundary's deliberate broad fallback catch.
+ignore = ["I001", "UP017", "UP035", "BLE001"]
