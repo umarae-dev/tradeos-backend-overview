@@ -1,6 +1,6 @@
 # Public Release Checklist
 
-Use this checklist before a hackathon submission, tagged release, or major public-source update.
+Use this checklist before a tagged release, external technical review, or major public-source update.
 
 ## Reproducibility
 
@@ -21,14 +21,14 @@ Use this checklist before a hackathon submission, tagged release, or major publi
 - [ ] Public/private boundary documentation still matches the code.
 - [ ] New copied production-derived code has been reviewed line-by-line for secrets and commercial IP.
 
-## Judge / reviewer experience
+## Reviewer experience
 
 - [ ] README quick start matches the actual commands.
 - [ ] Architecture diagram and code map match the repository.
 - [ ] License is present and consistent with public source.
 - [ ] Provenance describes production lineage without implying fake historical commits.
 - [ ] Security policy gives a private-reporting route without requesting sensitive disclosure in public issues.
-- [ ] CI checks are visible on the submitted commit.
-- [ ] Submission references the exact commit/tag being reviewed.
+- [ ] CI checks are visible on the reviewed commit.
+- [ ] External review references the exact commit/tag being evaluated.
 
 A release is not considered verified merely because the files exist; the executable checks above must pass on the release commit.
