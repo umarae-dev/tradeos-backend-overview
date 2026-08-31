@@ -1,77 +1,152 @@
 # Zynost Intelligence — Public Methodology
 
-This document explains the public methodology boundary of Zynost Intelligence. It is intentionally detailed enough to describe how the system approaches evidence and uncertainty without publishing proprietary prompts, production credentials, internal tuning, or operational secrets.
+This document explains the public methodology boundary of Zynost Intelligence. It is detailed enough to describe how the system handles evidence, uncertainty and synthesis without publishing proprietary prompts, credentials, commercial tuning or operational secrets.
 
 ## 1. Evidence before synthesis
 
-Zynost separates market observation from natural-language interpretation.
+Zynost separates **market observation**, **deterministic computation** and **natural-language synthesis**.
 
-The evidence layer is assembled from live/public market, derivatives, project, security, on-chain, macro and news sources. Deterministic formulas turn those observations into structured modules with explicit classifications, coverage and data-quality metadata.
+The evidence layer is assembled from market, derivatives, project, security, on-chain, macro, news and institutional sources. Deterministic formulas turn those observations into structured modules with explicit classifications, roles, coverage, strength and data-quality metadata.
 
-A language model is not permitted to become the source of market measurements simply because it can describe them fluently.
+A language model is not permitted to become the source of a market measurement simply because it can describe that measurement fluently.
 
-## 2. Module-level semantics
+In the current production architecture, the Full Scan core can complete its evidence bundle, deterministic consensus, FlowState, Institutional Lenses and Market Twin with **zero model calls**. Language-model synthesis is a separate, on-demand step.
+
+## 2. Twelve-module evidence contract
+
+The production evidence contract currently organizes observations into twelve core modules:
+
+1. Technical
+2. Price Structure
+3. Liquidity
+4. Order Flow
+5. Leverage
+6. Risk
+7. News Context
+8. Macro
+9. Project
+10. Security
+11. On-chain
+12. Derivatives
+
+The public reference mirrors that conceptual structure without claiming that every public formula or weight equals the private production tuning.
+
+## 3. Module-level semantics
 
 Not every metric is treated as a directional signal.
 
 Modules have explicit roles:
 
-- directional;
-- context;
-- risk gate.
+- **directional** — can contribute to the bullish/bearish posture;
+- **context** — improves interpretation without becoming an automatic vote;
+- **risk gate** — can weaken or invalidate a thesis without pretending to predict direction.
 
-A classification is interpreted inside the meaning of its own module. A value such as "high" cannot be globally translated into bullish or bearish without knowing what it describes.
+A classification is interpreted inside its own module. A value such as `high` cannot be globally translated into bullish or bearish without knowing what it describes.
 
-## 3. Honest unavailable states
+## 4. Coverage-aware unavailable states
 
 Optional upstream data can fail or simply not exist for an asset.
 
-When reliable coverage is unavailable, Zynost marks that evidence unavailable rather than silently replacing it with a fabricated score. Coverage and quality therefore become part of the output itself.
+When defensible coverage is unavailable, Zynost marks that evidence unavailable rather than silently replacing it with a fabricated score. Coverage and quality therefore become part of the output itself.
 
-## 4. Point-in-time integrity
+This matters for long-tail assets, recently listed markets, tokenized instruments and chain-specific evidence where a source may not apply.
+
+## 5. Deterministic consensus
+
+Consensus is calculated from the eligible directional evidence subset. Coverage and signal strength contribute to weighting, while context and risk-gate modules remain separately inspectable.
+
+The purpose is not to manufacture a precise confidence number from every fact. It is to produce a reproducible posture from the evidence that is actually directional while preserving uncertainty around the rest.
+
+## 6. Market Twin and point-in-time integrity
 
 Historical-comparison features are constructed from information available at the historical observation time. Future outcomes are used only after the historical anchor has been selected.
 
-This separation is intended to prevent look-ahead leakage in Market Twin analogue matching.
+This separation is intended to prevent look-ahead leakage.
 
-## 5. Market Twin
+Market Twin compares the current market vector with prior regimes using robust-scaled distance over a bounded feature set. Its design principles include:
 
-Market Twin compares the current market vector with prior regimes using robust-scaled distance over a bounded feature set.
+- sufficient current feature coverage;
+- candidate snapshots strictly before the current observation;
+- spacing between selected analogues to reduce near-duplicate outcome windows;
+- a minimum sample of independent analogues;
+- outcomes expressed as distributions rather than guaranteed targets;
+- adverse and favorable path statistics where sufficient history exists;
+- scenario adjustments re-run through the same matcher instead of being converted directly into predicted prices.
 
-The public design principles are:
+Production full-quality Market Twin coverage is initially calibrated for BTC and ETH while additional independent history accumulates for broader assets.
 
-- sufficient current feature coverage is required;
-- candidate snapshots must predate the current observation;
-- historical anchors are spaced apart to reduce near-duplicate outcome windows;
-- a minimum sample of independent analogues is required before the feature is considered operational;
-- outcomes are expressed as distributions rather than a guaranteed target;
-- downside and upside path statistics are included where sufficient history exists;
-- scenario adjustments are re-run through the same historical matcher instead of being converted directly into predicted prices.
+## 7. FlowState and FlowShift
 
-The exact production feature weights, internal tuning and operational datasets are not published here.
+FlowState transforms available evidence into higher-level market-condition dimensions such as:
 
-## 6. FlowState and institutional lenses
+- Fresh Capital;
+- Leverage Dependency;
+- Holder Pressure;
+- Execution Quality;
+- Supply Shock.
 
-The institutional layer combines observable market dimensions such as capital flow, leverage, liquidity/execution quality, supply conditions and positioning into higher-level research views.
+Those dimensions can resolve into interpretable regimes such as Organic Accumulation, Leveraged Markup, Distribution into Strength, Liquidity Vacuum, Supply Overhang or Balanced Transition.
 
-These views are deterministic transformations of the evidence bundle. They do not rely on an LLM to invent a regime label from prose.
+FlowShift compares a later owner-scoped scan with the previous state and records a material regime or dimension change without requiring a language-model call.
 
-A later scan can be compared against a prior owner-scoped scan to detect a material regime or dimension shift.
+## 8. Institutional Lenses
 
-## 7. AI Decision Brief boundary
+The commercial intelligence layer can expose structured research lenses around:
 
-The Decision Brief is generated only after the evidence and deterministic layers exist.
+- options risk surface;
+- leverage stress;
+- absorption and exhaustion;
+- official institutional positioning;
+- cross-market dislocation.
 
-The model receives a bounded context containing decision-relevant fields, not raw credentials, user PII or unrestricted production state.
+These lenses are deterministic transformations of source evidence. A model is not asked to invent the underlying funding, options, positioning or flow measurements.
 
-Its role is synthesis and explanation: bull case, bear case, skeptic/risk check, confidence and user-facing language.
+## 9. Opportunity discovery and validation separation
 
-## 8. Reproducibility
+The production Opportunity Radar combines market discovery with confirmation evidence. Different output tiers deliberately carry different validation claims.
 
-Decision-relevant evidence is persisted with analysis runs. This allows deterministic layers to be re-derived from stored evidence and lets presentation evolve without rewriting the original observations.
+A historically validated configuration should keep its own methodology, universe, sample and assumptions. Newer order-book, DEX, open-interest or composite signals must not inherit that historical result simply because they now participate in a broader product.
 
-## 9. Limitations
+Where a signal does not have an appropriate historical time series, forward tracking is the more defensible validation path.
 
-Zynost does not claim that historical analogues guarantee future outcomes. Public provider coverage can be incomplete, particularly for long-tail assets. Market microstructure can change, regimes can break, and security or project metadata can be stale or unavailable.
+This is why production concepts such as Confirmed, Emerging, Extreme Watch and Early Activity remain separate rather than being blended into one universal confidence score.
 
-Research output should therefore be interpreted as structured evidence, not a promise of profit or an instruction to trade.
+## 10. Trade Blueprint boundary
+
+The production Trade Blueprint uses market-derived values such as OHLCV candles, ATR, pivot/support-resistance structure, trend direction and volatility/exhaustion checks to produce entry, stop and target zones.
+
+Natural-language explanation can describe those levels. It is not allowed to overwrite or improvise them.
+
+## 11. Decision Brief boundary
+
+The Decision Brief is generated only after the evidence and deterministic layers already exist.
+
+The synthesis model receives a bounded decision context containing decision-relevant fields rather than raw credentials, user PII or unrestricted production state.
+
+Its role is to communicate:
+
+- decision posture;
+- bull case;
+- bear case;
+- skeptic/contradiction check;
+- risk gates;
+- FlowState and institutional context;
+- Market Twin context;
+- confirmation conditions;
+- invalidation conditions;
+- what would change the view;
+- a simpler explanation in the requested language.
+
+That boundary is intentionally different from asking a model to predict a market from scratch.
+
+## 12. Evidence integrity and reproducibility
+
+Decision-relevant evidence is persisted with analysis runs in the commercial system. Deterministic layers can therefore be re-derived from stored evidence without rewriting the original observations.
+
+Stored downstream outputs can also carry integrity signatures so another synthesis layer can reject content that does not verify before using it as evidence.
+
+## 13. Limitations
+
+Zynost does not claim that historical analogues guarantee future outcomes. Provider coverage can be incomplete, particularly for long-tail assets. Market microstructure can change, regimes can break, token metadata can become stale, and a resting order can disappear between observations.
+
+Research output should therefore be interpreted as structured decision evidence and uncertainty — not a promise of profit or an instruction to trade.
