@@ -23,6 +23,12 @@ The same verification code is published through three separately inspectable cha
 
 Together these establish current operational control of the product domain, linked production deployment and public repository. Zynost is currently pre-incorporation, so this record is not presented as a government incorporation certificate. Founder ownership is stated separately in the submitted cap table and founder declaration.
 
+## Repository disclosure scope
+
+This repository is a runnable, disclosure-safe reference implementation and architecture overview. It is not a mirror of Zynost's commercial production system. Production source code, proprietary research logic and tuning, paid-provider integrations, security controls, and operational configuration remain in private repositories. Production secrets and customer data are not published in this repository.
+
+The public/private boundary is documented in [`PUBLIC_PRIVATE_BOUNDARY.md`](PUBLIC_PRIVATE_BOUNDARY.md). For formal due diligence, Zynost can provide a supervised product demonstration or a time-limited review of a sanitized private code mirror where appropriate.
+
 ## Public product references
 
 - Company website: https://zynost.com
