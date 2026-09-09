@@ -12,6 +12,7 @@ This repository is **real executable source code**, not a documentation-only sho
 **Python:** 3.11+  
 **Public/private boundary:** [`PUBLIC_PRIVATE_BOUNDARY.md`](PUBLIC_PRIVATE_BOUNDARY.md)  
 **Release verification:** [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md)
+**Startup Estonia verification:** [`STARTUP_ESTONIA_VERIFICATION.md`](STARTUP_ESTONIA_VERIFICATION.md)
 
 ---
 
